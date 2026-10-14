@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">Delta Vault</string>
-    <string name="title_activity_main">Delta Vault</string>
-    <string name="package_name">com.deltavault.files</string>
-    <string name="custom_url_scheme">com.deltavault.files</string>
-</resources>

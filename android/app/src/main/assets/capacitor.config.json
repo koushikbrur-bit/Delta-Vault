@@ -1,9 +1,0 @@
-{
-	"appId": "com.deltavault.files",
-	"appName": "Delta Vault",
-	"webDir": "www",
-	"backgroundColor": "#0b0d0a",
-	"android": {
-		"allowMixedContent": false
-	}
-}
