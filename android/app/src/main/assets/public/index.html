@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0d0a">
+<title>Delta Vault</title>
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body data-pane="files">
+<div class="app">
+  <header class="top panel">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M6 2h20l4 4v20l-4 4H6l-4-4V6z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M16 8l8 15H8z" fill="currentColor"/><path d="M16 14.5l3.4 6.3h-6.8z" fill="var(--bg)"/></svg>
+      <div class="bt"><b>Delta Vault</b><span>Device file operations · 2.0</span></div>
+    </div>
+    <div class="status">
+      <button class="chip" id="acc" type="button"><i></i>Checking access</button>
+      <span class="chip" id="clock">--:--:--</span>
+    </div>
+  </header>
+
+  <div class="deck" id="deck">
+    <div class="scrim" id="scrim"></div>
+    <aside class="side panel" id="side" aria-label="Locations">
+      <section>
+        <h2 class="lbl">Locations</h2>
+        <div id="locs" class="tree"></div>
+      </section>
+      <section>
+        <h2 class="lbl">Shortcuts</h2>
+        <div id="shorts" class="tree"></div>
+      </section>
+      <section>
+        <h2 class="lbl">Storage</h2>
+        <div class="meter"><div id="mfill"></div></div>
+        <p class="mono sm mute" id="stat" style="margin:8px 0 0"></p>
+      </section>
+      <section>
+        <h2 class="lbl">Ops log</h2>
+        <ol id="log" class="log"></ol>
+      </section>
+    </aside>
+
+    <main class="stage panel" id="stage">
+      <div class="head">
+        <div class="tabsbar">
+          <button class="btn" id="menu" type="button">Menu</button>
+          <nav class="tabs" id="tabs" aria-label="Sections">
+            <button class="tab on" type="button" data-pane="files" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="miter" stroke-linecap="square" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Files</button>
+            <button class="tab" type="button" data-pane="storage" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="miter" stroke-linecap="square" aria-hidden="true"><rect x="3" y="4" width="18" height="16"/><path d="M12 4v16M3 12h9M12 9h9"/></svg>Storage</button>
+            <button class="tab" type="button" data-pane="big" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="miter" stroke-linecap="square" aria-hidden="true"><path d="M4 20h16M7 20V10M12 20V4M17 20v-7"/></svg>Big files</button>
+            <button class="tab" type="button" data-pane="dupes" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="miter" stroke-linecap="square" aria-hidden="true"><rect x="8" y="8" width="12" height="12"/><path d="M4 16V4h12"/></svg>Duplicates</button>
+            <button class="tab" type="button" data-pane="locker" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="miter" stroke-linecap="square" aria-hidden="true"><rect x="5" y="11" width="14" height="9"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Locker</button>
+            <button class="tab" type="button" data-pane="bin" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="miter" stroke-linecap="square" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>Bin<span class="badge" id="bin-badge" hidden>0</span></button>
+          </nav>
+        </div>
+      </div>
+
+      <!-- Files -->
+      <section class="pane" id="pane-files">
+        <div class="sh">
+          <nav id="crumbs" class="crumbs" aria-label="Location"></nav>
+        </div>
+        <div class="bar">
+          <button class="btn pri" type="button" id="b-new">New folder</button>
+          <button class="btn" type="button" id="b-paste" hidden>Paste</button>
+          <span class="sp"></span>
+          <div class="search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="6"/><path d="M15 15l6 6"/></svg>
+            <input class="in" id="q" type="search" placeholder="Search this folder" aria-label="Search this folder and its subfolders" autocomplete="off">
+            <button type="button" id="clr" aria-label="Clear search" hidden>&times;</button>
+          </div>
+          <select class="in" id="sort" aria-label="Sort by">
+            <option value="name">Name</option>
+            <option value="modified">Modified</option>
+            <option value="size">Size</option>
+            <option value="type">Type</option>
+          </select>
+          <button type="button" class="sq" id="dir" aria-label="Toggle sort direction">&uarr;</button>
+          <button type="button" class="sq" id="selall" aria-label="Select all" title="Select all"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16"/><path d="M8 12.5l3 3 5-6"/></svg></button>
+          <button type="button" class="sq" id="hid" aria-label="Show hidden files" aria-pressed="false" title="Hidden files"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          <button type="button" class="sq" id="refresh" aria-label="Refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12a8 8 0 1 1-2.5-5.8M20 4v5h-5"/></svg></button>
+          <div class="seg" role="group" aria-label="View">
+            <button type="button" id="v-grid" aria-label="Grid view" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><rect x="14" y="14" width="6" height="6"/></svg></button>
+            <button type="button" id="v-list" aria-label="List view" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+          </div>
+        </div>
+        <div class="fw" id="fw">
+          <div class="lh"><span></span><span></span><span>Name</span><span>Size</span><span class="ty">Type</span><span class="dt">Modified</span></div>
+          <div id="field" class="field" role="listbox" aria-multiselectable="true" aria-label="Files"></div>
+        </div>
+      </section>
+
+      <!-- Storage map -->
+      <section class="pane" id="pane-storage" hidden>
+        <div class="phead">
+          <div class="ptitle"><h2>Storage map</h2><p class="mute sm">See which folders and file types use your space.</p></div>
+          <div class="pctl">
+            <select class="in" id="st-vol" aria-label="Storage to scan"></select>
+            <button class="btn pri" type="button" id="st-scan">Scan</button>
+            <button class="btn" type="button" id="st-cancel" hidden>Cancel</button>
+          </div>
+        </div>
+        <div class="pbody" id="st-body"></div>
+      </section>
+
+      <!-- Big files -->
+      <section class="pane" id="pane-big" hidden>
+        <div class="phead">
+          <div class="ptitle"><h2>Big files</h2><p class="mute sm">The largest files on your storage, biggest first.</p></div>
+          <div class="pctl">
+            <select class="in" id="bg-min" aria-label="Minimum size">
+              <option value="0">Any size</option>
+              <option value="10485760">Over 10 MB</option>
+              <option value="52428800">Over 50 MB</option>
+              <option value="104857600">Over 100 MB</option>
+              <option value="524288000">Over 500 MB</option>
+              <option value="1073741824">Over 1 GB</option>
+            </select>
+            <button class="btn" type="button" id="bg-scan">Rescan</button>
+          </div>
+        </div>
+        <div class="pbody" id="bg-body"></div>
+      </section>
+
+      <!-- Duplicates -->
+      <section class="pane" id="pane-dupes" hidden>
+        <div class="phead">
+          <div class="ptitle"><h2>Duplicate finder</h2><p class="mute sm">Finds files with identical content, even when the names differ.</p></div>
+          <div class="pctl">
+            <select class="in" id="dp-scope" aria-label="Where to look"></select>
+            <select class="in" id="dp-min" aria-label="Smallest file to check">
+              <option value="10240">Over 10 KB</option>
+              <option value="102400" selected>Over 100 KB</option>
+              <option value="1048576">Over 1 MB</option>
+              <option value="10485760">Over 10 MB</option>
+            </select>
+            <button class="btn pri" type="button" id="dp-run">Find duplicates</button>
+            <button class="btn" type="button" id="dp-cancel" hidden>Cancel</button>
+          </div>
+        </div>
+        <div class="pbody" id="dp-body"></div>
+      </section>
+
+      <!-- Private locker -->
+      <section class="pane" id="pane-locker" hidden>
+        <div class="phead">
+          <div class="ptitle"><h2>Private locker</h2><p class="mute sm">PIN-protected space that other apps cannot read.</p></div>
+          <div class="pctl" id="lk-ctl" hidden>
+            <button class="btn" type="button" id="lk-lock">Lock now</button>
+            <button class="btn" type="button" id="lk-pin">Change PIN</button>
+            <button class="btn" type="button" id="lk-erase">Erase locker</button>
+          </div>
+        </div>
+        <div class="pbody" id="lk-body"></div>
+      </section>
+
+      <!-- Recycle bin -->
+      <section class="pane" id="pane-bin" hidden>
+        <div class="phead">
+          <div class="ptitle"><h2>Recycle bin</h2><p class="mute sm">Deleted items stay here for 30 days, then are removed.</p></div>
+          <div class="pctl">
+            <button class="btn" type="button" id="bn-all">Select all</button>
+            <button class="btn" type="button" id="bn-empty">Empty bin</button>
+          </div>
+        </div>
+        <div class="pbody" id="bn-body"></div>
+      </section>
+    </main>
+
+    <aside class="detail panel" id="detail" aria-label="Inspector">
+      <div class="dh"><h2 class="lbl">Inspector</h2><button class="x" type="button" id="dclose" aria-label="Close inspector">&times;</button></div>
+      <div id="dbody"></div>
+    </aside>
+  </div>
+</div>
+
+<div class="gate" id="gate" hidden>
+  <div class="gp panel">
+    <div class="haz"></div>
+    <div class="gb">
+      <svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M6 2h20l4 4v20l-4 4H6l-4-4V6z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M16 8l8 15H8z" fill="currentColor"/><path d="M16 14.5l3.4 6.3h-6.8z" fill="var(--bg)"/></svg>
+      <h1>Access required</h1>
+      <p id="g-intro">Delta Vault works directly on this device's storage. Grant access so it can list, open and organize your files.</p>
+      <ul class="perm" id="g-perms">
+        <li id="p-media">
+          <div><b id="g-media-t">Photos, videos and audio</b><span class="d" id="g-media-d">Lets the app read your media files.</span></div>
+          <span class="chip warn" id="s-media">Needed</span>
+          <button class="btn pri" type="button" data-gate="media">Allow</button>
+        </li>
+        <li id="p-all">
+          <div><b>All files access</b><span class="d">Needed to browse every folder, including Downloads and documents. Android opens a settings page: switch the option on for Delta Vault, then come back.</span></div>
+          <span class="chip warn" id="s-all">Needed</span>
+          <button class="btn pri" type="button" data-gate="all">Open settings</button>
+        </li>
+      </ul>
+      <div class="gacts">
+        <button class="btn pri" type="button" id="g-enter" disabled>Enter vault</button>
+        <button class="btn" type="button" id="g-limited" hidden>Continue with limited access</button>
+      </div>
+      <p class="note" id="g-note" hidden></p>
+    </div>
+  </div>
+</div>
+
+<div id="busy" hidden><div class="bp panel"><div class="haz"></div><div class="bt2" id="busy-t">Working</div></div></div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script src="js/core.js"></script>
+<script src="js/files.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/big.js"></script>
+<script src="js/dupes.js"></script>
+<script src="js/bin.js"></script>
+<script src="js/locker.js"></script>
+<script src="js/viewer.js"></script>
+<script src="js/boot.js"></script>
+</body>
+</html>
